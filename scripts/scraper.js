@@ -1,3 +1,41 @@
+/** 
+ * INITIALISE SCRAPER
+ */
+
+// Scrape the video list from the webpage and send list to the popup.
+function updateVideoList() {
+    const videoList = scrapeVideoList();
+
+    chrome.runtime.sendMessage({
+        action: "VIDEO_LIST",
+        videoDetails: videoList,
+        hostname: window.location.hostname
+    });
+}
+
+// Once the webpage has finished loading, then update the video list.
+window.addEventListener('load', () => updateVideoList());
+// Update the video list now regardless of whether the webpage has finished loading or not.
+updateVideoList();
+
+
+/**
+ * SCRAPER FUNCTIONS
+ */
+
+// Get the Panopto videos which are visible on the page.
+function scrapeVideoList() {
+    var singleDetails = getOneVideo();
+    var bulkDetails = getVideoSeries() || [];
+
+    var combined = arrayUniqueId([singleDetails, ...bulkDetails].filter(e => e != null));
+    if (combined === undefined || combined.length == 0) {
+        combined = arrayUniqueId(getHomeVideos());
+    }
+
+    return combined;
+}
+
 // Gets the id and name of the video on the page.
 // Otherwise returns null.
 function getOneVideo() {
@@ -15,7 +53,7 @@ function getOneVideo() {
     if (id != null) {
         return {
             id: id,
-            name: safeFileName(name)
+            name: name
         };
     }
     return null;
@@ -44,7 +82,7 @@ function getVideoSeries() {
                 var name = atags[j].innerText;
                 finds.push({
                     id: id,
-                    name: safeFileName(name)
+                    name: name
                 });
             }
         }
@@ -79,8 +117,6 @@ function getVideoSeries() {
         }
     }
 
-    console.log(details);
-
     return arrayUniqueId(details);
 }
 
@@ -99,46 +135,9 @@ function getHomeVideos() {
     }).filter(e => e != null && e.id != "" && e.id != null);
 }
 
-// Setup popup.
-function setupPopup() {
-    var singleDetails = getOneVideo();
-    var bulkDetails = getVideoSeries() || [];
-
-    var combined = arrayUniqueId([singleDetails, ...bulkDetails].filter(e => e != null));
-    if (combined === undefined || combined.length == 0) {
-        combined = arrayUniqueId(getHomeVideos());
-    }
-
-    chrome.runtime.sendMessage({
-        action: "VIEW",
-        videoDetails: combined,
-        hostname: window.location.hostname
-    });
-}
-
-// Downloads the video on this page.
-function downloadPage() {
-    var details = getOneVideo();
-    if (details != null) {
-        downloadSingle(details.id, details.name);
-    }
-}
-
-// Download all videos on this page.
-function downloadMany() {
-    var details = getVideoSeries();
-    for (i = 0; i < details.length; i++) {
-        downloadSingle(details[i].id, details[i].name);
-    }
-}
-
-// Downloads a single video given the video ID and its name.
-function downloadSingle(id, name) {
-    var host = window.location.hostname;
-    var url = 'https://' + host + '/Panopto/Podcast/Social/' + id + '.mp4';
-    chrome.runtime.sendMessage({ action: "DOWNLOAD", url: url, filename: name + '.mp4' });
-}
-
+/**
+ * HELPER FUNCTIONS
+ */
 function flatten(arr) {
     return arr.reduce(function(flat, toFlatten) {
         return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
@@ -156,16 +155,3 @@ function arrayUniqueId(array) {
 
     return a.filter(e => e != null);
 }
-
-// Makes a name safe to be a filename for Windows and Unix-based systems.
-function safeFileName(filename) {
-    filename = filename.replace(/[\/\\:*?<>]/g, ' ');
-    filename = filename.replace('"', "'");
-    while (filename.includes('..')) {
-        filename = filename.replace('..', '');
-    }
-    return filename;
-}
-
-window.addEventListener('load', () => setupPopup());
-setupPopup();

@@ -42,14 +42,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const batch_dl_div = document.createElement('div');
             batch_dl_div.style.width = '100%';
             batch_dl_div.style.textAlign = 'center';
-            const batch_dl_button = document.createElement('button');
+            const batch_dl_button = createDownloadAllButton(`Download ${videoList.length} videos`);
             batch_dl_div.appendChild(batch_dl_button);
-            batch_dl_button.innerText = `Download ${videoList.length} videos`;
             batch_dl_button.id = 'batch_download';
             batch_dl_button.addEventListener('click', () => {
                 quickDownloadMany(videoList);
             });
-            document.getElementById('downloader_list').appendChild(batch_dl_div);
+            document.getElementById('downloader').insertBefore(batch_dl_div, document.getElementById('downloader_list'));
         }
         document.getElementById('downloader_list').appendChild(document.createElement('hr'));
 
@@ -68,8 +67,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const p = document.createElement('p');
             p.innerHTML = videoList[i].name;
             div_txcnt.appendChild(p);
-            const but = document.createElement('button');
-            but.innerHTML = 'Download';
+            const but = createMaterialButton('Download');
             but.addEventListener('click', () => {
                 quickDownloadOne(videoList[i]);
             });
@@ -84,6 +82,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
+function createMaterialButton(text) {
+    const button = document.createElement('button');
+    button.classList.add('mdc-button');
+    const ripple = document.createElement('span');
+    ripple.classList.add('mdc-button__ripple');
+    const label = document.createElement('span');
+    label.classList.add('mdc-button__label');
+    label.innerHTML = text;
+    button.setLabel = newText => label.innerHTML = newText;
+    button.appendChild(ripple);
+    button.appendChild(label);
+    mdc.ripple.MDCRipple.attachTo(button);
+    return button;
+}
+
+function createOutlinedMaterialButton(text) {
+    const button = createMaterialButton(text);
+    button.classList.add('mdc-button--outlined');
+    return button;
+}
+
+function createDownloadAllButton(text) {
+    const button = createOutlinedMaterialButton(text);
+    const icon = document.createElement('i');
+    icon.classList.add('material-icons');
+    icon.classList.add('mdc-button__icon');
+    icon.setAttribute('aria-hidden', "true");
+    icon.innerHTML = 'download';
+    button.getElementsByClassName('mdc-button__label')[0].prepend(icon);
+    return button;
+}
+
 /**
  * DOWNLOADING FUNCTIONALITY
  */
@@ -92,6 +122,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function quickDownloadOne(video) {
     const name = video.name;
     const id = video.id;
+    // TODO instead will be given to Download Manager
     chrome.downloads.download({ url: getPodcastLink(id), filename: safeFileName(name + '.mp4') });
 }
 

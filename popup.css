@@ -1,0 +1,103 @@
+body {
+    width: 250px;
+    background-color: #fafafa;
+    font-family: 'Roboto';
+}
+
+p {
+    margin-top: 0;
+    font-size: 10pt;
+    color: #202124;
+}
+
+#title_image {
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+.downloader {
+    text-align: center;
+}
+
+#terms {
+    text-align: left;
+}
+
+
+/* TODO this is convolted if unncessrecary */
+
+#downloader_list {
+    background-color: #fafafa;
+    margin: 8px -8px 0px;
+    padding: 0px 8px;
+}
+
+.video_element {
+    display: flex;
+    flex-direction: horizontal;
+    align-items: stretch;
+}
+
+.image_container {
+    display: block;
+    width: 75px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    border-radius: 8px;
+    margin-right: 8px;
+}
+
+.text_container {
+    display: block;
+    width: 167px;
+    padding: 0;
+}
+
+.text_container p {
+    color: #202124;
+    font-weight: 500;
+    font-size: 10.5pt;
+    margin-bottom: 0px;
+}
+
+.text_container button {
+    height: 24px;
+    padding: 0;
+}
+
+#footer {
+    text-align: center;
+    font-size: 8pt;
+}
+
+#footer a,
+#footer a:hover,
+#footer a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+hr {
+    border-top-color: rgba(0, 0, 0, .12);
+    border-top-style: solid;
+    border-bottom-style: none;
+    margin: 6px -8px;
+}
+
+
+/* MATERIAL UI TWEAKS */
+
+body {
+    --mdc-theme-primary: #2e7d32;
+    --mdc-theme-secondary: #ffc107;
+}
+
+.mdc-button--outlined:not(:disabled) {
+    border-color: var(--mdc-theme-primary);
+}
+
+.mdc-button .mdc-button__label {
+    letter-spacing: 0.04em;
+}

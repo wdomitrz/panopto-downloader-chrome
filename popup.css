@@ -24,19 +24,52 @@ p {
     text-align: left;
 }
 
-
-/* TODO this is convolted if unncessrecary */
-
 #downloader_list {
     background-color: #fafafa;
-    margin: 8px -8px 0px;
-    padding: 0px 8px;
+    margin: 8px 0px 0px;
+    padding: 0px;
 }
 
 .video_element {
     display: flex;
-    flex-direction: horizontal;
+    flex-direction: row;
     align-items: stretch;
+    position: relative;
+    transition: all 0.25s ease-out;
+}
+
+.video_overflow {
+    float: right;
+    height: 24px;
+    z-index: 10;
+}
+
+.video_overflow button {
+    font-size: 18px;
+    width: 18px;
+    --mdc-ripple-fg-size: 18px;
+}
+
+.video_overflow button::before {
+    --mdc-ripple-fg-size: 14px;
+    --mdc-ripple-top: 5px;
+    --mdc-ripple-left: 2px;
+    clip: rect(auto, auto, 13.3px, auto);
+}
+
+.video_overflow button::after {
+    clip: rect(auto, auto, 13.3px, auto);
+}
+
+.video_overflow .overflow_menu {
+    position: absolute;
+    float: right;
+    --mdc-menu-max-width: 200px;
+    user-select: none;
+}
+
+.mdc-list-item--disabled {
+    color: #b0b0b0;
 }
 
 .image_container {
@@ -82,6 +115,7 @@ p {
 hr {
     border-top-color: rgba(0, 0, 0, .12);
     border-top-style: solid;
+    border-top-width: 1px;
     border-bottom-style: none;
     margin: 6px -8px;
 }
